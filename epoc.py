@@ -4,11 +4,11 @@
 """
 ###############################################################################
 from __future__ import division
-from PyQt5 import QtCore, QtGui
+from pyqtgraph.Qt import QtCore, QtGui
 from emokit.emotiv import Emotiv
 import matplotlib.pyplot as plt
 from collections import deque
-from scipy import signal, fft
+from scipy import signal,fft
 from Queue import Queue
 import time
 import threading
@@ -76,7 +76,6 @@ def writeData(q1):
     file.close()
 
 
-print("Success!")
 ##############################################################################
 class ring_buffer(object):
     def __init__(self,size):
