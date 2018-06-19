@@ -8,7 +8,7 @@ from pyqtgraph.Qt import QtCore, QtGui
 from emokit.emotiv import Emotiv
 import matplotlib.pyplot as plt
 from collections import deque
-from scipy import signal,fft
+from scipy import signal, fft
 from Queue import Queue
 import time
 import threading
@@ -235,7 +235,7 @@ class Reader(threading.Thread):
 if __name__ == '__main__':
     Fs = 128
     # O1 O2 P7 P8 AF3 F7 F3 FC5 T7 T8 FC6 F4 F8 AF4 X Y
-    electrodes = 'O1 O2 P7'  # choose which sensors to graph
+    electrodes = 'O1 O2'  # choose which sensors to graph
     tw_sec = 2  # time window in which fft will be calculated
     q1 = Queue()
     step = np.round(0.5*Fs)  # how many points will be graphed in every updt
@@ -247,7 +247,7 @@ if __name__ == '__main__':
     file = open("myData.txt", 'w')
     while (os.path.isfile("flag.txt") is not True):
         startTime = time.time()
-    print("Execution delay was {} seconds".format(time.time() - startTime))
+    print("Execution delay was",(time.time() - startTime), "seconds")
     """ Add This part to the MATLAB file before the Screen() function
             flagout = fullfile('~/Desktop/matlabdocs','flag.txt');
             fid = fopen(flagout, 'w');
