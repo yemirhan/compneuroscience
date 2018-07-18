@@ -120,7 +120,6 @@ class Checkbar(Frame):
     
 
 if __name__ == '__main__':
-    electrodes = ''
     root = Tk()
     elist1 = Checkbar(root, ['01', 'O2', 'P7', 'P8'])
     elist2 = Checkbar(root, ['AF3', 'F7', 'F3', 'FC5'])
@@ -144,7 +143,6 @@ if __name__ == '__main__':
                 if fulllist[i][j] is 1:
                     electrodes = electrodes + str(electrodelist[i*4 + j]) + " "
         print(electrodes)
-        buttonwindow = Toplevel(root)
         Fs = 128
         tw_sec = 2  # time window in which fft will be calculated
         q1 = Queue()
@@ -154,8 +152,13 @@ if __name__ == '__main__':
         flag1 = threading.Event()
         thread1 = Reader(q1, flag1, step, tw_sec, electrodes)
         thread1.start()
+        buttonwindow = Toplevel(root)
+        Button(buttonwindow, text='Quit', command=root.quit).pack(side=RIGHT)
+        buttonwindow.pack()
+        buttonwindow.mainloop()
+        thread1.stop()
     b = Button(root, text="Start", command=allstates)
     b.pack(fill=X)
 
     root.mainloop()
-    thread1.stop()
+    
