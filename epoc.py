@@ -4,10 +4,9 @@
 """
 ###############################################################################
 from __future__ import division
-from PyQt.QWidgets import *
+from Tkinter import *
 from pyqtgraph.Qt import QtCore, QtGui
 from emokit.emotiv import Emotiv
-import matplotlib.pyplot as plt
 from collections import deque
 from scipy import signal, fft
 from Queue import Queue
@@ -20,39 +19,6 @@ import os
 import os.path
 ###############################################################################
 # Helper functions
-
-def eeg_fft(y, Fs = 128, show = False, limits = [0,30,0,20]):
-    y=np.atleast_2d(y)
-    [C,N]=np.shape(y)
-    T=1/Fs
-    y_f = fft(y)
-    xf = np.linspace(0.0, 1.0/(2.0*T), N/2,endpoint=False)
-    xf=np.atleast_2d(xf)
-    xf=np.tile(xf,(C,1))
-    yf= (np.square(2.0/N *np.abs(y_f[:,0:N//2])))
-    if show:
-        plt.ion()
-        plt.plot(np.squeeze(xf), np.squeeze(yf))
-        plt.axis(limits)
-        plt.xticks(range(limits[1]))
-        plt.grid()
-    return yf,xf
-
-def filtering(eeg,cut_off=[2,40],mode='band',order=4,show=False,limits=[0,30,0,20],ex=[111,111]):
-    eeg=np.atleast_2d(eeg)
-    [C,N]=np.shape(eeg)
-    tmp=np.zeros(shape=(np.shape(eeg)))
-    b, a = signal.butter(order, np.array((cut_off))/(Fs/2), btype = mode)
-    for i in range(C):
-        if (i==ex[0]) or (i==ex[1]):
-            tmp[i,:]=eeg[i,:]
-            continue
-        tmp[i,:]=signal.filtfilt(b, a, eeg[i,:] )
-        #print np.mean(tmp[i,:])
-    if show:
-        eeg_fft(np.squeeze(eeg),Fs,show,limits)
-        eeg_fft(np.squeeze(tmp),Fs,show,limits)
-    return tmp
 
 def  quality_color(av):
     aa=av//20
@@ -78,78 +44,28 @@ def writeData(q1):
 
 
 ##############################################################################
-class Window(QWidget): 
-    def __init__(self):
-        QWidget.__init__(self)
-        layout = QGridLayout()
-        self.setLayout(layout)
-        self.o1 = QCheckBox("O1")
-        self.o1.toggled.connect(self.checkbox_toggled)
-        layout.addWidget(self.o1, 0, 0)
-        self.o2 = QCheckBox("O2")
-        self.o2.toggled.connect(self.checkbox_toggled)
-        layout.addWidget(self.o2, 0, 1)
-        self.p7 = QCheckBox("P7")
-        self.p7.toggled.connect(self.checkbox_toggled)
-        layout.addWidget(self.p7, 0, 2)
-        self.p8 = QCheckBox("P8")
-        self.p8.toggled.connect(self.checkbox_toggled)
-        layout.addWidget(self.p8, 0, 3)
-        self.af3 = QCheckBox("AF3")
-        self.af3.toggled.connect(self.checkbox_toggled)
-        layout.addWidget(self.af3, 1, 0)
-        self.f7 = QCheckBox("F7")
-        self.f7.toggled.connect(self.checkbox_toggled)
-        layout.addWidget(self.f7, 1, 1)
-        self.f3 = QCheckBox("F3")
-        self.f3.toggled.connect(self.checkbox_toggled)
-        layout.addWidget(self.f3, 1, 2)
-        self.fc5 = QCheckBox("FC5")
-        self.fc5.toggled.connect(self.checkbox_toggled)
-        layout.addWidget(self.fc5, 1, 3)
-        self.t7 = QCheckBox("T7")
-        self.t7.toggled.connect(self.checkbox_toggled)
-        layout.addWidget(self.t7, 2, 0)
-        self.t8 = QCheckBox("T8")
-        self.t8.toggled.connect(self.checkbox_toggled)
-        layout.addWidget(self.t8, 2, 1)
-        self.fc6 = QCheckBox("FC6")
-        self.fc6.toggled.connect(self.checkbox_toggled)
-        layout.addWidget(self.fc6, 2, 2)
-        self.f4 = QCheckBox("F4")
-        self.f4.toggled.connect(self.checkbox_toggled)
-        layout.addWidget(self.f4, 2, 3)
-        self.f8 = QCheckBox("F8")
-        self.f8.toggled.connect(self.checkbox_toggled)
-        layout.addWidget(self.f8, 3, 0)
-        self.af4 = QCheckBox("AF4")
-        self.af4.toggled.connect(self.checkbox_toggled)
-        layout.addWidget(self.af4, 3, 1)
-        self.x = QCheckBox("X")
-        self.x.toggled.connect(self.checkbox_toggled)
-        layout.addWidget(self.x, 3, 2)
-        self.y = QCheckBox("Y")
-        self.y.toggled.connect(self.checkbox_toggled)
-        layout.addWidget(self.y, 3, 3)
+class Application(Frame):
+    def say_hi(self):
+        print "hi there, everyone!"
 
-        button = QPushButton("Kaydet")
-        button.clicked.connect(self.on_button_clicked)
-        layout.addWidget(button, 4, 1, 1, 2)
+    def createWidgets(self):
+        self.QUIT = Button(self)
+        self.QUIT["text"] = "QUIT"
+        self.QUIT["fg"]   = "red"
+        self.QUIT["command"] =  self.quit
 
+        self.QUIT.pack({"side": "left"})
 
-    def checkbox_toggled(self):
-        selectlist = [0, 0, 0]
-        if self.o1.isChecked(): 
-            selectlist[0] = 1
-        if self.o2.isChecked(): 
-            selectlist[1] = 1
-        if self.p7.isChecked(): 
-            selectlist[2] = 1
-        selectlist1 = selectlist
-        print(selectlist1)
-    def on_button_clicked(self): 
-        print("The button was pressed!")
-        selectlist1 = selectlist
+        self.hi_there = Button(self)
+        self.hi_there["text"] = "Hello",
+        self.hi_there["command"] = self.say_hi
+
+        self.hi_there.pack({"side": "left"})
+
+    def __init__(self, master=None):
+        Frame.__init__(self, master)
+        self.pack()
+        self.createWidgets()
 
 
 class ring_buffer(object):
@@ -311,33 +227,26 @@ class Reader(threading.Thread):
 if __name__ == '__main__':
     Fs = 128
     # O1 O2 P7 P8 AF3 F7 F3 FC5 T7 T8 FC6 F4 F8 AF4 X Y
-    #electrodes = 'O1 O2'  # choose which sensors to graph
+    electrodes = 'O1 O2'  # choose which sensors to graph
     tw_sec = 2  # time window in which fft will be calculated
     q1 = Queue()
     step = np.round(0.5*Fs)  # how many points will be graphed in every updt
     # or how many seconds (0.5) between update_plots repetetions
     # or overlap between tw_sec windows
     flag1 = threading.Event()
-
+    root = Tk()
+    root.geometry('800x600')
+    app = Application(master=root)
+    app.mainloop()
+    root.destroy()
     # sychronisation with matlab part
     file = open("myData.txt", 'w')
-    while ("MATLAB.exe" not in os.popen().read()):
-        startTime = time.time()
+    # while ("MATLAB.exe" not in os.popen().read()):
+    #     startTime = time.time()
     # end of sync
     
     thread1 = Reader(q1, flag1, step, tw_sec, electrodes)
     show = 1
-    app = QtGui.QApplication(sys.argv)
-    app = QApplication(sys.argv)
-
-    screen = Window()
-    screen.show()
-    electrodelist = ['O1', 'O2', 'P7', 'P8', 'AF3', 'F7', 'F3', 'FC5', 'T7', 'T8', 'FC6', 'F4', 'F8', 'AF4', 'X', 'Y']
-    selectlist1 = [0, 0, 0] 
-    electrodes = ''
-    for i in range(len(selectlist1)):
-        if i is 1:
-            electrodes = electrodes + str(electrodelist[i]) + " "
     s = Plotter(electrodes, tw_sec, step, q1, flag1)
     # writeData(q1) #cogs lab addition
     thread1.start()
